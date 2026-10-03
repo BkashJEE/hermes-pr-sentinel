@@ -1,0 +1,45 @@
+name: pr-sentinel
+version: 0.1.0
+description: A local, open-source PR reviewer for Hermes. Reviews new commits on your repos with any model, fixes what it finds behind a test gate, and keeps an honest scorecard of how often it was right.
+author: Bikash Joshi
+license: MIT
+homepage: https://github.com/BkashJEE/hermes-pr-sentinel
+tags: [github, code-review, pull-requests, autofix, software-development]
+kind: standalone
+requires_hermes: ">=0.21"
+provides_tools:
+  - pr_queue
+  - pr_context
+  - pr_post_review
+  - pr_autofix
+  - pr_mark_finding
+  - pr_scorecard
+config_schema:
+  repos:
+    type: list
+    default: []
+    description: Repos to watch, as 'owner/name'. Uses your existing `gh` login; the plugin never reads a token.
+  post_reviews:
+    type: bool
+    default: false
+    description: >-
+      Post each review as a PR comment. Off by default: reviews come back as drafts for you to read
+      first. Operator-only — the model cannot turn it on.
+  autofix_repos:
+    type: list
+    default: []
+    description: >-
+      Repos where pr_autofix may push a fix commit to a PR branch. Empty by default. Even here, autofix
+      refuses fork PRs, refuses without a test command, and pushes only when the tests pass.
+  test_commands:
+    type: dict
+    default: {}
+    description: "Test command per repo, e.g. {'owner/name': 'python -m unittest discover -s tests'}. Run without a shell."
+  max_diff_chars:
+    type: int
+    default: 60000
+    description: Diff characters handed to the reviewer; larger diffs are truncated and flagged.
+  test_timeout:
+    type: int
+    default: 900
+    description: Seconds the autofix test run may take before it counts as failed.
